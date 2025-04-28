@@ -25,16 +25,15 @@
     <h2 class="mb-4">Prediction Result</h2>
     <p id="diseaseResult" class="result-text"></p>
     <p id="confidenceResult" class="result-text"></p>
-    <a href="Home.html" class="btn btn-success mt-4">Go Back</a>
+    <a href="indeex.html" class="btn btn-success mt-4">Go Back</a>
   </div>
 
   <script>
-    // Get query parameters from the URL
+
     const urlParams = new URLSearchParams(window.location.search);
     const disease = urlParams.get('disease');
     const confidence = urlParams.get('confidence');
 
-    // Display the prediction result
     if (disease && confidence) {
       document.getElementById('diseaseResult').textContent = `Predicted Disease: ${disease}`;
       document.getElementById('confidenceResult').textContent = `Confidence: ${confidence}%`;
