@@ -1,9 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log(" DOM fully loaded!");
-  window.addEventListener("beforeunload", (e) => {
-    console.log(" Page is about to reload");
-  });
-  
   const dropArea = document.getElementById("dropArea");
   const fileInput = document.getElementById("fileInput");
   const previewImg = document.getElementById("previewImg");
@@ -11,9 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const loader = document.getElementById("loader");
   const modalBody = document.getElementById("modalBody");
   const resultModal = new bootstrap.Modal(document.getElementById("resultModal"));
-
-  console.log("dropArea:", dropArea);
-  console.log("uploadBtn:", uploadBtn);
 
   let selectedFile = null;
 
@@ -34,37 +26,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   uploadBtn.addEventListener("click", (e) => {
     e.preventDefault();
-  
     if (!selectedFile) return;
-  
+
     const formData = new FormData();
     formData.append("file", selectedFile);
-  
+
     loader.style.display = "block";
     uploadBtn.disabled = true;
-  
+
     setTimeout(() => {
-      console.log("📤 Upload button clicked. Sending image to backend...");
-      fetch("http://127.0.0.1:8000/predict/", {
+      fetch("https://cattle-disease-detector-backend.onrender.com/predict/", {
         method: "POST",
         body: formData
       })
       .then(async (response) => {
         const data = await response.json().catch(err => {
-          console.error(" Error parsing JSON:", err);
-          throw new Error("Invalid JSON response from server");
+          console.error("Error parsing JSON:", err);
+          throw new Error("Invalid response from server.");
         });
-  
+
         loader.style.display = "none";
         uploadBtn.disabled = false;
-  
+
         if (!response.ok) {
           throw new Error(data.message || "Prediction failed");
         }
-  
+
         const predicted = data.data.predicted_disease;
         const confidence = data.data.confidence;
-  
+
         modalBody.innerHTML = `
           <p><strong style="color: #1ABC9C;">Disease:</strong> ${predicted}</p>
           <p><strong style="color: #1ABC9C;">Confidence:</strong> ${(confidence * 100).toFixed(2)}%</p>
@@ -74,10 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .catch((error) => {
         loader.style.display = "none";
         uploadBtn.disabled = false;
-        console.error(" Fetch error:", error);
-        modalBody.innerHTML = `<p style="color: red;"> ${error.message}</p>`;
+        modalBody.innerHTML = `<p style="color: red;">${error.message}</p>`;
         resultModal.show();
       });
-    }, 3500);
-  });  
+    }, 1000);
+  });
 });
